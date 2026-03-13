@@ -1,1 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>IoT Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
+<body>
+
+<h1>Simple IoT Dashboard</h1>
+
+<button onclick="send('ON')">Turn ON</button>
+<button onclick="send('OFF')">Turn OFF</button>
+
+<canvas id="chart"></canvas>
+
+<script>
+
+async function loadData(){
+
+const response = await fetch('/api/data')
+const data = await response.json()
+
+const values = data.map(x=>x.value)
+const labels = data.map(x=>x.time)
+
+new Chart(document.getElementById('chart'),{
+type:'line',
+data:{
+labels:labels,
+datasets:[{label:'Value',data:values}]
+}
+})
+
+}
+
+async function send(cmd){
+
+await fetch('/send',{
+method:'POST',
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:'cmd='+cmd
+})
+
+}
+
+loadData()
+
+</script>
+
+</body>
+</html>
